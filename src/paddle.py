@@ -1,5 +1,6 @@
 # Paddle
 import pygame
+import direction
 
 class Paddle:
     # Creates a x by y rectangle which represents the paddle
@@ -10,13 +11,14 @@ class Paddle:
     # Draws the paddle
     def drawPaddle(self):
         from screen import SCR_SURFACE
-        pygame.draw.rect(SCR_SURFACE, (255, 255, 255), pygame.Rect((self.x, self.y), (50, 395)))
+        RED, BLUE, GREEN = 255, 255, 255
+        pygame.draw.rect(SCR_SURFACE, (RED, BLUE, GREEN), pygame.Rect((self.x, self.y), (50, 395)))
     
     # Moves the paddle left or right
-    def movePaddle(self, direction):
+    def movePaddle(self, paddleDirection):
         self.erasePaddle() # Erase the current paddle located at (x,y) before drawing the next one so multiple paddles aren't drawn
 
-        if direction:
+        if paddleDirection == direction.RIGHT:
             self.x += 5 # Moves the paddle to the right if direction == true
         else:
             self.x -= 5 # Moves the paddle to the left otherwise
@@ -37,9 +39,7 @@ class Paddle:
     
     # Checks if the ball collides with the paddle, returns true if so
     def collides(self, ballX):
-        if ballX >= self.x and ballX <= self.x + 50:
-            return True
-        return False
+        return ballX >= self.x and ballX <= self.x + 50
         
         
 

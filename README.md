@@ -1,5 +1,10 @@
 A Pong game made in Python.
-Cannot release the audio files, font, and the icon because of the copyright issues.
+
+UPDATE 
+-------
+- Ball doesn't bounce in the same direction anymore (pseudo-randomized now)
+- Speed of the ball changes based on the score count (a higher score makes it move faster) 
+
 
 HOW TO RUN
 ----------
@@ -11,8 +16,3 @@ HOW TO RUN
 3) cd to the "Pong" directory and type "python ./src/main.py"
 
 If all the steps were done correctly, you should see a game of Pong open up! :)
-
-KNOWN BUGS:
-- Ball will bounce back and forth in the same direction after a few hits with the paddle
-
-I may or may not update this in the future.

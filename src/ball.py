@@ -1,5 +1,6 @@
 # Handles the ball direction and the movement of the ball
 import pygame
+import direction
 
 
 class Ball:
@@ -9,40 +10,39 @@ class Ball:
         self.x = width
         self.y = height
         self.hitTop = True
-        self.hitBottom = False
-        self.direction = True # True for going right, false for going left 
+        self.direction = direction.getRandDirection() # True for going right, false for going left 
 
-    # Moves the ball in a given direction, TRUE if going right, FALSE if going left
-    def moveBall(self):
+    def moveBall(self, score):
+      SPEED_MAX = 3
+      speedRate = 0.1 * score
+      speed = 3 + min(SPEED_MAX, speedRate)
+
       self.eraseBall() # Erase the current ball located at (x,y) before drawing the next one so multiple balls aren't drawn
 
       if self.hitsWall(): # Check to see if a wall is a hit and change the direction if so
         self.direction = not self.direction 
     
       # Adjusts the x-coordinate of the ball, +3 if going right, otherwise -3
-      if self.direction:
-        self.x += 3
+      if self.direction == direction.RIGHT:
+        self.x += speed
       else:
-        self.x -= 3
+        self.x -= speed
 
       # Adjusts the y-coordinate of the ball, if it hits the top it goes down, otherwise it goes up
       if self.hitTop:
-        self.y += 3
+        self.y += speed
       else:
-        self.y -= 3
+        self.y -= speed
 
-      if self.y < 0: # If it hits the top, bounce back to the bottom
-        self.hitBottom = False
+    # If it hits the top, bounce back to the bottom
+      if self.y < 0: 
         self.hitTop = True 
       elif self.y >= 400:
         self.hitTop = False
-        self.hitBottom = True
 
     # Returns true if the ball hits a wall
     def hitsWall(self):
-      if self.x >= 400 or self.x <= 0: 
-        return True
-      return False
+      return self.x >= 400 or self.x <= 0
 
 
     # Draws the ball onto the screen
@@ -60,14 +60,15 @@ class Ball:
     def bounce(self, fromPaddle):
       from screen import SCR_WIDTH
       if SCR_WIDTH / 2 <= self.x:
-        self.direction = True
+        self.direction = direction.RIGHT
       else:
-        self.direction = False
+        self.direction = direction.LEFT
 
-      if fromPaddle: # If the collision was with the paddle
+    # If the collision was with the paddle
+      if fromPaddle: 
         self.hitBottom = True
         self.hitTop = False
-        self.direction = not self.direction
+        self.direction = direction.getRandDirection()
 
 
 

@@ -5,6 +5,8 @@ import screen
 import ball
 import paddle
 import time
+import os.path
+import direction
 
 class Game:
     def __init__(self, x, y):
@@ -19,23 +21,27 @@ class Game:
     # Starts the game
     def start(self):
         pygame.display.set_caption("Pong")
-        pongIcon = pygame.image.load("./icon/icon.jpg") # Load the icon as a surface
-        pygame.display.set_icon(pongIcon)
+        if os.path.isfile("./icon/icon.jpg"):
+            pongIcon = pygame.image.load("./icon/icon.jpg") # Load the icon as a surface
+            pygame.display.set_icon(pongIcon)
         # Allows for holding down keys, First argument is the # of milliseconds before the first keydown is sent, second is the interval
         pygame.key.set_repeat(1, 75) 
-        pygame.mixer.music.load("./sounds/hit.wav")
+
+        hasHitSound = False
+        if os.path.isfile("./sounds/hit.wav"):
+            pygame.mixer.music.load("./sounds/hit.wav")
+            hasHitSound = True
         pongBall = ball.Ball(200, 50) # Creates the ball starting point at the (x,y) coordinates specified
         while True:
             self.pad.drawPaddle()
-            pongBall.moveBall()
+            pongBall.moveBall(self.score)
             pongBall.drawBall()
             if pongBall.yPos() + 7 >= self.pad.yPos(): # Check if the ball reaches the y-pos of the paddle
                 if self.pad.collides(pongBall.xPos()): # Check if the paddle collides with the ball
-                    pygame.mixer.music.play(-1)
-                    time.sleep(0.05)
+                    if hasHitSound:
+                        pygame.mixer.music.play(-1)
                     pongBall.bounce(True)
                     self.score += 1 # Score +1 for each ball hit
-                    pygame.mixer.music.stop()
                 else: # Quit game if the paddle fails to collide with the ball
                     Game.gameOver()
             self.displayScore()
@@ -51,9 +57,9 @@ class Game:
                     pygame.quit()
                     quit()
                 elif event.key == pygame.K_RIGHT and self.pad.xPos() + 53 < SCR_WIDTH:
-                    self.pad.movePaddle(True) # Move paddle to the right
+                    self.pad.movePaddle(direction.RIGHT) 
                 elif event.key == pygame.K_LEFT and self.pad.xPos() > 0: 
-                    self.pad.movePaddle(False) # Move paddle to the left
+                    self.pad.movePaddle(direction.LEFT) 
 
     # Displays the current score of the player, second argument specifies to erase the score which should be done before drawing the next one
     def displayScore(self):
@@ -65,15 +71,16 @@ class Game:
     # Shows the game over screen before exitting the game
     def gameOver():
         from screen import SCR_SURFACE, SCR_HEIGHT, SCR_WIDTH
-        pygame.mixer.music.unload()
-        pygame.mixer.music.load("sounds/gameover.wav")
+        if os.path.isfile("./sounds/gameover.wav"):
+            pygame.mixer.music.unload()
+            pygame.mixer.music.load("sounds/gameover.wav")
+            pygame.mixer.music.play()
         SCR_SURFACE.fill((0, 0, 0))
         gameOverFont = pygame.font.Font("font/Minecraft.ttf", 40)
         gameOver = gameOverFont.render("GAME OVER", True, (255, 255, 255))
         gameOverRect = gameOver.get_rect()
         gameOverRect.center = (SCR_WIDTH / 2, SCR_HEIGHT / 2)
         SCR_SURFACE.blit(gameOver, gameOverRect)
-        pygame.mixer.music.play()
         pygame.display.update()
         time.sleep(1)
         pygame.mixer.music.stop()
